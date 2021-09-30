@@ -15,4 +15,8 @@ describe('Login component', () => {
   it('has a username input element', () => {
     expect(screen.getByLabelText('Username')).toBeInTheDocument();
   });
+
+  it('has a password input element', () => {
+    expect(screen.getByLabelText('Password')).toBeInTheDocument();
+  });
 });

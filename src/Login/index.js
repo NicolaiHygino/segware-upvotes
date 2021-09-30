@@ -9,6 +9,12 @@ const Login = () => {
         name="username"
         id="username"
       />
+      <label htmlFor="password">Password</label>
+      <input
+        type="password"
+        name="password"
+        id="password"
+      />
     </form>
   );
 };
