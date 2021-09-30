@@ -11,4 +11,8 @@ describe('Login component', () => {
   it('renders a form', () => {
     expect(screen.getByRole('form')).toBeInTheDocument();
   });
+
+  it('has a username input element', () => {
+    expect(screen.getByLabelText('Username')).toBeInTheDocument();
+  });
 });
