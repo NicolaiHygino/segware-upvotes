@@ -8,4 +8,7 @@ describe('Login component', () => {
     render(<Login />);
   })
   
+  it('renders a form', () => {
+    expect(screen.getByRole('form')).toBeInTheDocument();
+  });
 });
