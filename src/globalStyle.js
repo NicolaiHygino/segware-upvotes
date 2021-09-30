@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyle = createGlobalStyle`
   * {
@@ -18,4 +18,11 @@ export const GlobalStyle = createGlobalStyle`
   h1, p {
     margin: 0;
   }
+`;
+
+export const MainSection = styled.section`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: auto;
 `;
