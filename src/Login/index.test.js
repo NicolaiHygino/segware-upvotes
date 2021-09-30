@@ -8,6 +8,10 @@ describe('Login component', () => {
     render(<Login />);
   })
   
+  it('renders a Login text heading', () => {
+    expect(screen.getByText('Login', { selector: 'h1' })).toBeInTheDocument();
+  });
+
   it('renders a form', () => {
     expect(screen.getByRole('form')).toBeInTheDocument();
   });

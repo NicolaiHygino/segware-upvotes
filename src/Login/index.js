@@ -10,6 +10,7 @@ import { MainSection } from '../globalStyle';
 const Login = () => {
   return (
     <MainSection>
+      <h1>Login</h1>
       <Form aria-label="form">
         <InputWrapper>
           <label htmlFor="username">Username</label>
