@@ -15,6 +15,7 @@ const Login = () => {
         name="password"
         id="password"
       />
+      <button>Login</button>
     </form>
   );
 };

@@ -19,4 +19,8 @@ describe('Login component', () => {
   it('has a password input element', () => {
     expect(screen.getByLabelText('Password')).toBeInTheDocument();
   });
+
+  it('has a login button', () => {
+    expect(screen.getByText('Login', { selector: 'button'})).toBeInTheDocument();
+  });
 });
