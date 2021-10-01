@@ -14,6 +14,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [signUpSuccess, setSignUpSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const handleSignUpSubmit = e => {
     e.preventDefault();
@@ -24,7 +25,13 @@ const Login = () => {
       setSignUpSuccess(true);
     })
     .catch(err => {
-      console.log(err);
+      switch (err.response.data.name) {
+        case 'SequelizeUniqueConstraintError':
+          setErrorMsg('Username has already been used.');
+          break;
+        default:
+          throw new Error(`Define some acion to ${err.name} error`);  
+      }
     });
   };
 
@@ -32,7 +39,6 @@ const Login = () => {
     <MainSection>
       <h1>Login</h1>
       {signUpSuccess && <p>Successfully registred</p>}
-      
       <Form aria-label="form">
         <InputWrapper>
           <label htmlFor="username">Username</label>
@@ -65,6 +71,7 @@ const Login = () => {
   const signUpForm = (
     <MainSection>
       <h1>Sign up</h1>
+      {errorMsg && <p>{errorMsg}</p>}
       <Form aria-label="form" onSubmit={e => handleSignUpSubmit(e)}>
         <InputWrapper>
           <label htmlFor="username">Username</label>

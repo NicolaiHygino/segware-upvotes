@@ -5,16 +5,22 @@ import { fireEvent, render, screen, act} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Login from '.';
 
-// const signUpSuccess = rest.post(
-//   'https://segware-book-api.segware.io/api/sign-up',
-//   (req, res, ctx) => res(ctx.status(200))
-// );
-// const handlers = [signUpSuccess];
+const bodyHaveRightKeys = obj => {
+  const keys = Object.keys(obj);
+  if (keys.includes('username') && keys.includes('password')) {
+    return true;
+  }
+  return false;
+}
 
 const server = setupServer(
   rest.post(
     'https://segware-book-api.segware.io/api/sign-up',
-    (req, res, ctx) => res(ctx.status(200))
+    (req, res, ctx) => {
+      return bodyHaveRightKeys(req.body)
+        ? res(ctx.status(200))
+        : res(ctx.status(400))
+    }
   )
 );
 
@@ -73,12 +79,7 @@ describe('Login component', () => {
     const singUpBtn = screen.getByText('Sign up', { selector: 'button' });
     fireEvent.click(singUpBtn);
 
-    const usernameInput = screen.getByLabelText('Username');
-    const passwordInput = screen.getByLabelText('Password');
     const submitBtn = screen.getByTestId('submit-form');
-    
-    fireEvent.change(usernameInput, { target: {value: 'nicolai'}});
-    fireEvent.change(passwordInput, { target: { value: '123'}})
     fireEvent.click(submitBtn);
     
     const successMsg = await screen.findByText('Successfully registred');
@@ -87,4 +88,29 @@ describe('Login component', () => {
       .toBeInTheDocument();
     expect(successMsg).toBeInTheDocument();
   });
+
+  it('show an error message when username has already been used',
+  async () => {
+    server.use(
+      rest.post(
+        'https://segware-book-api.segware.io/api/sign-up',
+        (req, res, ctx) => res(
+          ctx.status(500),
+          ctx.json({
+            name: 'SequelizeUniqueConstraintError'
+          })
+        )
+      ));
+
+    render(<Login />);
+    const singUpBtn = screen.getByText('Sign up', { selector: 'button' });
+    fireEvent.click(singUpBtn);
+
+    const submitBtn = screen.getByTestId('submit-form');
+    fireEvent.click(submitBtn);
+    
+    const errorMsg = await screen.findByText('Username has already been used.');
+
+    expect(errorMsg).toBeInTheDocument();
+  })
 });
