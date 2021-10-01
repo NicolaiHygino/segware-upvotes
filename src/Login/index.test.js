@@ -53,23 +53,24 @@ describe('Login component', () => {
       .toBeInTheDocument();
   });
 
-  it('has a sing-up button', () => {
+  it('has a sign-up button', () => {
     render(<Login />);
-    expect(screen.getByText('Sing up', { selector: 'button' }))
+    expect(screen.getByText('Sign up', { selector: 'button' }))
       .toBeInTheDocument();
   })
 
-  it('clicks in sing-up button and switch to sing-up form', () => {
+  it('clicks in sign-up button and switch to sign-up form', () => {
     render(<Login />);
-    const singUpBtn = screen.getByText('Sing up', { selector: 'button' });
+    const singUpBtn = screen.getByText('Sign up', { selector: 'button' });
     fireEvent.click(singUpBtn);
     
-    expect(screen.getByText('Sing up', { selector: 'h1' }));
+    expect(screen.getByText('Sign up', { selector: 'h1' }));
   });
 
-  it('back to login form and show success message when success sign up', async () => {
+  it('back to login form and show success message when success sign up', 
+  async () => {
     render(<Login />);
-    const singUpBtn = screen.getByText('Sing up', { selector: 'button' });
+    const singUpBtn = screen.getByText('Sign up', { selector: 'button' });
     fireEvent.click(singUpBtn);
 
     const usernameInput = screen.getByLabelText('Username');

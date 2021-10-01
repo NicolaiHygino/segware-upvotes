@@ -54,7 +54,7 @@ const Login = () => {
               type="button" 
               onClick={() => setIsLogin(!isLogin)}
             >
-              Sing up
+              Sign up
             </Button>
           </ButtonsWrapper>
         </InputWrapper>
@@ -62,9 +62,9 @@ const Login = () => {
     </MainSection>
   );
 
-  const singUpForm = (
+  const signUpForm = (
     <MainSection>
-      <h1>Sing up</h1>
+      <h1>Sign up</h1>
       <Form aria-label="form" onSubmit={e => handleSignUpSubmit(e)}>
         <InputWrapper>
           <label htmlFor="username">Username</label>
@@ -84,7 +84,7 @@ const Login = () => {
             onChange={e => setPassword(e.target.value)}
           />
           <ButtonsWrapper>
-            <Button data-testid="submit-form">Sing up</Button>
+            <Button data-testid="submit-form">Sign up</Button>
             <p>Already have an account?</p>
             <Button
               type="button" 
@@ -98,7 +98,7 @@ const Login = () => {
     </MainSection>
   );
 
-  return isLogin ? loginForm : singUpForm;
+  return isLogin ? loginForm : signUpForm;
 };
 
 export default Login;
