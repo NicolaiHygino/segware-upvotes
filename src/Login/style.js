@@ -28,6 +28,17 @@ export const Input = styled.input`
   margin-bottom: 20px;
 `;
 
+export const ButtonsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  
+  & p {
+    margin-left: auto;
+    font-size:.8em;
+    padding-right: .5em;
+  }
+`;
+
 export const Button = styled.button`
   background-color: #ededed;
   border: 0;
