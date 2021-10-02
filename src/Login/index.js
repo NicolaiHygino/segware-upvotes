@@ -36,6 +36,8 @@ const Login = () => {
   }
 
   const handleSignupSubmit = values => {
+    setSuccessMessage('');
+    setErrorMessage('');
     const url = 'https://segware-book-api.segware.io/api/sign-up';
     axios.post(url, values).then(() => {
       setIsLogin(true);
@@ -91,7 +93,11 @@ const Login = () => {
               {isLogin
                 ? <p>Don't have an account?</p>
                 : <p>Already have an account?</p>}
-              <Button type="button" onClick={() => setIsLogin(!isLogin)}>
+              <Button 
+                type="button"
+                data-testid="switch-button"
+                onClick={() => setIsLogin(!isLogin)}
+              >
                 {isLogin ? 'Sign up' : 'Login' }
               </Button>
             </SwitchWrapper>

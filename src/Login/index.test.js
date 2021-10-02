@@ -5,14 +5,6 @@ import { fireEvent, render, screen, act, getByLabelText} from '@testing-library/
 import '@testing-library/jest-dom';
 import Login from '.';
 
-const bodyHaveRightKeys = obj => {
-  const keys = Object.keys(obj);
-  if (keys.includes('username') && keys.includes('password')) {
-    return true;
-  }
-  return false;
-}
-
 const server = setupServer(
   rest.post(
     'https://segware-book-api.segware.io/api/sign-up',
@@ -55,70 +47,69 @@ describe('Login component', () => {
       .toBeInTheDocument();
   });
 
-  it('has a sign-up button', () => {
+  it('has a button that switch between Login and Sign up', () => {
     render(<Login />);
-    expect(screen.getByText('Sign up', { selector: 'button' }))
-      .toBeInTheDocument();
-  })
-
-  it('clicks in sign-up button and switch to sign-up form', () => {
-    render(<Login />);
-    const singUpBtn = screen.getByText('Sign up', { selector: 'button' });
-    fireEvent.click(singUpBtn);
+    const switchButton = screen.getByTestId('switch-button');
     
+    fireEvent.click(switchButton);
     expect(screen.getByText('Sign up', { selector: 'h1' }));
+    
+    fireEvent.click(switchButton);
+    expect(screen.getByText('Login', { selector: 'h1' }));
   });
-
-  it('back to login form and show success message when success sign up', 
-  async () => {
-    render(<Login />);
-    const singUpBtn = screen.getByText('Sign up', { selector: 'button' });
-    fireEvent.click(singUpBtn);
-
-    const username = screen.getByLabelText('Username');
-    const password = screen.getByLabelText('Password');
-    const submitBtn = screen.getByTestId('submit-form');
+  describe('Sign up submit', () => {
+    const goToSubmitForm = () => {
+      const switchButton = screen.getByTestId('switch-button');
+      fireEvent.click(switchButton);
+    }
     
-    fireEvent.change(username, { target: {value: 'nicolai'}})
-    fireEvent.change(password, { target: {value: '123'}})
-    fireEvent.click(submitBtn);
+    const fillFieldsAndSubmit = () => {
+      const username = screen.getByLabelText('Username');
+      const password = screen.getByLabelText('Password');
+      const submitBtn = screen.getByTestId('submit-form');
+      
+      fireEvent.change(username, { target: {value: 'nicolai'}})
+      fireEvent.change(password, { target: {value: '123'}})
+      fireEvent.click(submitBtn);
+    };
     
-    const successMsg = await screen
-      .findByText('Successfully registred');
-
-    expect(screen.getByText('Login', { selector: 'h1'}))
-      .toBeInTheDocument();
-    expect(successMsg).toBeInTheDocument();
-  });
-
-  it('show an error message when username has already been used',
-  async () => {
-    server.use(
-      rest.post(
-        'https://segware-book-api.segware.io/api/sign-up',
-        (req, res, ctx) => res(
-          ctx.status(500),
-          ctx.json({
-            name: 'SequelizeUniqueConstraintError'
-          })
-        )
-      ));
-
-    render(<Login />);
-    const singUpBtn = screen.getByText('Sign up', { selector: 'button' });
-    fireEvent.click(singUpBtn);
-
-    const username = screen.getByLabelText('Username');
-    const password = screen.getByLabelText('Password');
-    const submitBtn = screen.getByTestId('submit-form');
-    
-    fireEvent.change(username, { target: {value: 'nicolai'}});
-    fireEvent.change(password, { target: {value: '123'}});
-    fireEvent.click(submitBtn);
-    
-    const errorMsg = await screen
-      .findByText('Username has already been used.');
-
-    expect(errorMsg).toBeInTheDocument();
+    it('back to login form and show success message on success', 
+    async () => {
+      render(<Login />);
+      
+      goToSubmitForm();
+      fillFieldsAndSubmit();
+      
+      const successMsg = await screen
+        .findByText('Successfully registred');
+  
+      expect(screen.getByText('Login', { selector: 'h1'}))
+        .toBeInTheDocument();
+      expect(successMsg).toBeInTheDocument();
+    });
+  
+    it('show an error message when username has already been used',
+    async () => {
+      server.use(
+        rest.post(
+          'https://segware-book-api.segware.io/api/sign-up',
+          (req, res, ctx) => res(
+            ctx.status(500),
+            ctx.json({
+              name: 'SequelizeUniqueConstraintError'
+            })
+          )
+        ));
+  
+      render(<Login />);
+      
+      goToSubmitForm()
+      fillFieldsAndSubmit();
+      
+      const errorMsg = await screen
+        .findByText('Username has already been used.');
+  
+      expect(errorMsg).toBeInTheDocument();
+    })
   })
 });
