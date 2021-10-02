@@ -1,6 +1,7 @@
 import styled from "styled-components";
+import { Form, Field, ErrorMessage } from 'formik';
 
-export const Form = styled.form`
+export const StyledForm = styled(Form)`
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -15,28 +16,41 @@ export const Form = styled.form`
   margin: 10px;
 `;
 
-export const InputWrapper = styled.div`
-  width: 80%;
-`;
-
-export const Input = styled.input`
+export const StyledField = styled(Field)`
   width: 100%;
   padding: 10px;
   border: 1px solid #dee0e1;
   border-radius: 5px;
   background-color: white;
+`;
+
+export const StyledErrorMessage = styled(ErrorMessage)`
+  font-size: .7em;
+  color: #e74c3c;
+`;
+
+export const FieldWrapper = styled.div`
+  width: 80%;
+  min-height: 75px;
   margin-bottom: 20px;
 `;
 
-export const ButtonsWrapper = styled.div`
+export const FormButtons = styled.div`
+  width: 80%;
   display: flex;
   align-items: center;
-  
+
   & p {
-    margin-left: auto;
     font-size:.8em;
     padding-right: .5em;
   }
+`;
+
+export const SwitchWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: flex-end;
 `;
 
 export const Button = styled.button`
@@ -46,3 +60,5 @@ export const Button = styled.button`
   padding: .5em 1em; 
   cursor: pointer;
 `;
+
+

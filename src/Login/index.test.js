@@ -1,7 +1,7 @@
 import React from 'react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { fireEvent, render, screen, act} from '@testing-library/react';
+import { fireEvent, render, screen, act, getByLabelText} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Login from '.';
 
@@ -16,11 +16,7 @@ const bodyHaveRightKeys = obj => {
 const server = setupServer(
   rest.post(
     'https://segware-book-api.segware.io/api/sign-up',
-    (req, res, ctx) => {
-      return bodyHaveRightKeys(req.body)
-        ? res(ctx.status(200))
-        : res(ctx.status(400))
-    }
+    (req, res, ctx) => res(ctx.status(200))
   )
 );
 
@@ -79,10 +75,16 @@ describe('Login component', () => {
     const singUpBtn = screen.getByText('Sign up', { selector: 'button' });
     fireEvent.click(singUpBtn);
 
+    const username = screen.getByLabelText('Username');
+    const password = screen.getByLabelText('Password');
     const submitBtn = screen.getByTestId('submit-form');
+    
+    fireEvent.change(username, { target: {value: 'nicolai'}})
+    fireEvent.change(password, { target: {value: '123'}})
     fireEvent.click(submitBtn);
     
-    const successMsg = await screen.findByText('Successfully registred');
+    const successMsg = await screen
+      .findByText('Successfully registred');
 
     expect(screen.getByText('Login', { selector: 'h1'}))
       .toBeInTheDocument();
@@ -106,10 +108,16 @@ describe('Login component', () => {
     const singUpBtn = screen.getByText('Sign up', { selector: 'button' });
     fireEvent.click(singUpBtn);
 
+    const username = screen.getByLabelText('Username');
+    const password = screen.getByLabelText('Password');
     const submitBtn = screen.getByTestId('submit-form');
+    
+    fireEvent.change(username, { target: {value: 'nicolai'}});
+    fireEvent.change(password, { target: {value: '123'}});
     fireEvent.click(submitBtn);
     
-    const errorMsg = await screen.findByText('Username has already been used.');
+    const errorMsg = await screen
+      .findByText('Username has already been used.');
 
     expect(errorMsg).toBeInTheDocument();
   })

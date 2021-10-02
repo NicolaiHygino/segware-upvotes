@@ -1,111 +1,105 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { 
-  Form,
-  InputWrapper,
-  Input,
+  StyledForm,
+  StyledField,
+  StyledErrorMessage,
+  FieldWrapper,
   Button,
-  ButtonsWrapper,
+  FormButtons,
+  SwitchWrapper,
 } from './style';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 import { MainSection } from '../globalStyle';
+
+const errorReducer = (err, cb) => {
+  switch (err) {
+    case 'SequelizeUniqueConstraintError':
+      cb('Username has already been used.');
+      break;
+    default:
+      throw new Error(`Add a new error handling for ${err}`);
+  }
+}
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [signUpSuccess, setSignUpSuccess] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState(false);
 
-  const handleSignUpSubmit = e => {
-    e.preventDefault();
-    
+  const header = isLogin ? 'Login' : 'Sign up';
+
+  const handleLoginSubmit = values => {
+    console.log('login');
+    console.log(values);
+  }
+
+  const handleSignupSubmit = values => {
     const url = 'https://segware-book-api.segware.io/api/sign-up';
-    axios.post(url, { username, password }).then(() => {
+    axios.post(url, values).then(() => {
       setIsLogin(true);
-      setSignUpSuccess(true);
+      setSuccessMessage('Successfully registred');
     })
-    .catch(err => {
-      switch (err.response.data.name) {
-        case 'SequelizeUniqueConstraintError':
-          setErrorMsg('Username has already been used.');
-          break;
-        default:
-          throw new Error(`Define some acion to ${err.name} error`);  
-      }
-    });
+    .catch(err => errorReducer(err.response.data.name, setErrorMessage));
   };
 
-  const loginForm = (
+  return (
     <MainSection>
-      <h1>Login</h1>
-      {signUpSuccess && <p>Successfully registred</p>}
-      <Form aria-label="form">
-        <InputWrapper>
-          <label htmlFor="username">Username</label>
-          <Input
-            type="text"
-            name="username"
-            id="username"
-          />
-          <label htmlFor="password">Password</label>
-          <Input
-            type="password"
-            name="password"
-            id="password"
-          />
-          <ButtonsWrapper>
-            <Button data-testid="submit-form">Login</Button>
-            <p>Don't have an account?</p>
-            <Button 
-              type="button" 
-              onClick={() => setIsLogin(!isLogin)}
-            >
-              Sign up
+      <h1>{header}</h1>
+      <Formik
+        initialValues={{ username: '', password: ''}}
+        validationSchema={Yup.object({
+          username: Yup.string().required('Required'),
+          password: Yup.string().required('Required'),
+        })}
+        onSubmit={values => {
+          isLogin 
+            ? handleLoginSubmit(values) 
+            : handleSignupSubmit(values)
+        }}
+      >
+        <StyledForm aria-label="form">
+          {errorMessage}
+          {successMessage}
+          
+          <FieldWrapper>
+            <label htmlFor="username">Username</label>
+            <StyledField 
+              id="username"
+              name="username" 
+              type="text" 
+            />
+            <StyledErrorMessage component="p" name="username" />
+          </FieldWrapper>
+
+          <FieldWrapper>
+            <label htmlFor="password">Password</label>
+            <StyledField 
+              id="password"
+              name="password"
+              type="password"
+            />
+            <StyledErrorMessage component="p" name="password" />
+          </FieldWrapper>
+
+          <FormButtons>
+            <Button type="submit" data-testid="submit-form">
+              {isLogin ? 'Login' : 'Sign up'}
             </Button>
-          </ButtonsWrapper>
-        </InputWrapper>
-      </Form>
+            <SwitchWrapper>
+              {isLogin
+                ? <p>Don't have an account?</p>
+                : <p>Already have an account?</p>}
+              <Button type="button" onClick={() => setIsLogin(!isLogin)}>
+                {isLogin ? 'Sign up' : 'Login' }
+              </Button>
+            </SwitchWrapper>
+          </FormButtons>
+        </StyledForm>
+      </Formik>
     </MainSection>
   );
-
-  const signUpForm = (
-    <MainSection>
-      <h1>Sign up</h1>
-      {errorMsg && <p>{errorMsg}</p>}
-      <Form aria-label="form" onSubmit={e => handleSignUpSubmit(e)}>
-        <InputWrapper>
-          <label htmlFor="username">Username</label>
-          <Input
-            type="text"
-            name="username"
-            id="username"
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-          />
-          <label htmlFor="password">Password</label>
-          <Input
-            type="password"
-            name="password"
-            id="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
-          <ButtonsWrapper>
-            <Button data-testid="submit-form">Sign up</Button>
-            <p>Already have an account?</p>
-            <Button
-              type="button" 
-              onClick={() => setIsLogin(!isLogin)}
-            >
-              Login
-            </Button>
-          </ButtonsWrapper>
-        </InputWrapper>
-      </Form>
-    </MainSection>
-  );
-
-  return isLogin ? loginForm : signUpForm;
 };
 
 export default Login;
