@@ -4,7 +4,6 @@ import { Form, Field, ErrorMessage } from 'formik';
 export const StyledForm = styled(Form)`
   display: flex;
   align-items: center;
-  justify-content: space-around;
   flex-direction: column;
   width: 100%;
   padding: 20px 10px;
@@ -61,4 +60,12 @@ export const Button = styled.button`
   cursor: pointer;
 `;
 
+export const ErrorSubmit = styled.p`
+  width: 80%;
+  margin-bottom: 20px;
+  color: #e74c3c;
+`;
 
+export const SuccessSubmit = styled(ErrorSubmit)`
+  color: #2ecc71;
+`;

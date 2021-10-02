@@ -8,6 +8,8 @@ import {
   Button,
   FormButtons,
   SwitchWrapper,
+  ErrorSubmit,
+  SuccessSubmit,
 } from './style';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -26,18 +28,24 @@ const errorReducer = (err, cb) => {
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const header = isLogin ? 'Login' : 'Sign up';
 
   const handleLoginSubmit = values => {
-    console.log('login');
-    console.log(values);
+    setSuccessMessage('');
+    setErrorMessage('');
+    
+    const url = 'https://segware-book-api.segware.io/api/sign-in';
+    axios.post(url, values).then(res => {
+      sessionStorage.setItem('token', res.data);
+    })
   }
 
   const handleSignupSubmit = values => {
     setSuccessMessage('');
     setErrorMessage('');
+    
     const url = 'https://segware-book-api.segware.io/api/sign-up';
     axios.post(url, values).then(() => {
       setIsLogin(true);
@@ -62,9 +70,9 @@ const Login = () => {
         }}
       >
         <StyledForm aria-label="form">
-          {errorMessage}
-          {successMessage}
-          
+          <ErrorSubmit>{errorMessage}</ErrorSubmit>
+          <SuccessSubmit>{successMessage}</SuccessSubmit>
+
           <FieldWrapper>
             <label htmlFor="username">Username</label>
             <StyledField 

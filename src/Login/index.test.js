@@ -1,18 +1,38 @@
 import React from 'react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { fireEvent, render, screen, act, getByLabelText} from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Login from '.';
 
-const server = setupServer(
-  rest.post(
-    'https://segware-book-api.segware.io/api/sign-up',
-    (req, res, ctx) => res(ctx.status(200))
+const signUp = rest.post(
+  'https://segware-book-api.segware.io/api/sign-up',
+  (req, res, ctx) => res(ctx.status(200))
+)
+
+const login = rest.post(
+  'https://segware-book-api.segware.io/api/sign-in',
+  (req, res, ctx) => res(
+    ctx.status(200),
+    ctx.json({ token: '123' })
   )
 );
 
+const handlers = [signUp, login];
+
+const server = setupServer(...handlers);
+
 describe('Login component', () => {
+  const fillFieldsAndSubmit = () => {
+    const username = screen.getByLabelText('Username');
+    const password = screen.getByLabelText('Password');
+    const submitBtn = screen.getByTestId('submit-form');
+    
+    fireEvent.change(username, { target: {value: 'nicolai'}})
+    fireEvent.change(password, { target: {value: '123'}})
+    fireEvent.click(submitBtn);
+  };
+  
   beforeAll(() => server.listen());
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
@@ -62,16 +82,6 @@ describe('Login component', () => {
       const switchButton = screen.getByTestId('switch-button');
       fireEvent.click(switchButton);
     }
-    
-    const fillFieldsAndSubmit = () => {
-      const username = screen.getByLabelText('Username');
-      const password = screen.getByLabelText('Password');
-      const submitBtn = screen.getByTestId('submit-form');
-      
-      fireEvent.change(username, { target: {value: 'nicolai'}})
-      fireEvent.change(password, { target: {value: '123'}})
-      fireEvent.click(submitBtn);
-    };
     
     it('back to login form and show success message on success', 
     async () => {
