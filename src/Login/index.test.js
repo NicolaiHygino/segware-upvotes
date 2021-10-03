@@ -1,23 +1,9 @@
 import React from 'react';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { server, rest, signUpURL } from '../serverTest'; 
+import { getFieldsFillAndSubmit } from '../testHelpers';
 import Login from '.';
-
-const signInURL = 'https://segware-book-api.segware.io/api/sign-in';
-const signUpURL = 'https://segware-book-api.segware.io/api/sign-up';
-
-const signIn = rest.post(signInURL, (req, res, ctx) => res(
-    ctx.status(200),
-    ctx.json({ token: '123' }),
-));
-
-const signUp = rest.post(signUpURL, (req, res, ctx) => res(
-  ctx.status(200),
-));
-
-const handlers = [signUp, signIn];
 
 const usernameAlreadyUsed = rest.post(signUpURL, (req, res, ctx) => res(
   ctx.status(500),
@@ -26,23 +12,7 @@ const usernameAlreadyUsed = rest.post(signUpURL, (req, res, ctx) => res(
   }),
 ));
 
-const server = setupServer(...handlers);
-
 describe('Login component', () => {
-  const fillFieldsAndSubmit = () => {
-    const username = screen.getByLabelText('Username');
-    const password = screen.getByLabelText('Password');
-    const submitBtn = screen.getByTestId('submit-form');
-    
-    fireEvent.change(username, { target: {value: 'nicolai'}})
-    fireEvent.change(password, { target: {value: '123'}})
-    fireEvent.click(submitBtn);
-  };
-  
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
-
   it('renders a Login text heading', () => {
     render(<Login />);
     expect(screen.getByText('Login', { selector: 'h1' }))
@@ -94,7 +64,7 @@ describe('Login component', () => {
       render(<Login />);
       
       goToSubmitForm();
-      fillFieldsAndSubmit();
+      getFieldsFillAndSubmit();
       
       const successMsg = await screen
         .findByText('Successfully registred');
@@ -111,7 +81,7 @@ describe('Login component', () => {
       render(<Login />);
       
       goToSubmitForm()
-      fillFieldsAndSubmit();
+      getFieldsFillAndSubmit();
       
       const errorMsg = await screen
         .findByText('Username has already been used.');
