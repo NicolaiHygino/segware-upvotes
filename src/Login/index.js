@@ -25,7 +25,7 @@ const errorReducer = (err, cb) => {
   }
 }
 
-const Login = () => {
+const Login = ({ setToken }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -39,6 +39,7 @@ const Login = () => {
     const url = 'https://segware-book-api.segware.io/api/sign-in';
     axios.post(url, values).then(res => {
       sessionStorage.setItem('token', res.data);
+      setToken(res.data);
     })
   }
 
@@ -117,3 +118,7 @@ const Login = () => {
 };
 
 export default Login;
+
+Login.defaultProps = {
+  setToken: () => {},
+}

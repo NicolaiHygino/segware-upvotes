@@ -5,20 +5,26 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Login from '.';
 
-const signUp = rest.post(
-  'https://segware-book-api.segware.io/api/sign-up',
-  (req, res, ctx) => res(ctx.status(200))
-)
+const signInURL = 'https://segware-book-api.segware.io/api/sign-in';
+const signUpURL = 'https://segware-book-api.segware.io/api/sign-up';
 
-const login = rest.post(
-  'https://segware-book-api.segware.io/api/sign-in',
-  (req, res, ctx) => res(
+const signIn = rest.post(signInURL, (req, res, ctx) => res(
     ctx.status(200),
-    ctx.json({ token: '123' })
-  )
-);
+    ctx.json({ token: '123' }),
+));
 
-const handlers = [signUp, login];
+const signUp = rest.post(signUpURL, (req, res, ctx) => res(
+  ctx.status(200),
+));
+
+const handlers = [signUp, signIn];
+
+const usernameAlreadyUsed = rest.post(signUpURL, (req, res, ctx) => res(
+  ctx.status(500),
+  ctx.json({
+    name: 'SequelizeUniqueConstraintError'
+  }),
+));
 
 const server = setupServer(...handlers);
 
@@ -100,16 +106,7 @@ describe('Login component', () => {
   
     it('show an error message when username has already been used',
     async () => {
-      server.use(
-        rest.post(
-          'https://segware-book-api.segware.io/api/sign-up',
-          (req, res, ctx) => res(
-            ctx.status(500),
-            ctx.json({
-              name: 'SequelizeUniqueConstraintError'
-            })
-          )
-        ));
+      server.use(usernameAlreadyUsed);
   
       render(<Login />);
       
